@@ -46,7 +46,7 @@ inquirer
             break;
         case "Add Employee":
             console.log("Add Employee");
-
+            addEmployee();
             break;
         case "View Department":
             console.log("View Department");
@@ -124,7 +124,39 @@ let addRole = () => {
             message: "What is the department id of the new role?"
         }]
     ).then((res) => {
-        connection.query("Insert into role (title, salary, department_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptid +")", (err,result) => {
+        connection.query("Insert into role (title, salary, department_id) VALUES ('" + res.title + "', '" + res.salary + "', '" + res.dptid +"')", (err,result) => {
+            if(err){
+                console.log("ERROR:"+err.message);
+            }
+            else{
+                console.log("new role data added");
+            }
+        });
+    })
+}
+
+// Adds an employee to the employee table
+let addEmployee = () => {
+    inquirer
+    .prompt([
+        {
+            name: "firstName",
+            message: "What is the first name of this new employee?"
+        },
+        {
+            name: "lastName",
+            message: "What is the last name of this new employee?"
+        },
+        {
+            name: "roleID",
+            message: "What is the role id number of this new employee?"
+        },
+        {
+            name: "manID",
+            message: "What is the manager's id number of this new employee?"
+        }]
+    ).then((res) => {
+        connection.query("Insert into employee (first_name, last_name, role_id, manager_id) VALUES ('" + res.firstName + "', '" + res.lastName + "', '" + res.roleID + "', '" + res.manID + "')", (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
             }
