@@ -15,6 +15,16 @@ const connection = mysql.createConnection({
     database: "company_db"
 });
 
+connection.connect((err) => {
+    if(err){
+        console.log('Error connecting to Db');
+        return;
+    }
+    console.log('Connection established');
+ });
+  
+// connection.end((err) => {});
+
 inquirer
 .prompt({
     type: "list",
@@ -50,15 +60,15 @@ inquirer
             break;
         case "View Department":
             console.log("View Department");
-
+            viewDpts();
             break;
         case "View Role":
             console.log("View Role");
-
+            viewRoles();
             break;
         case "View Employee":
             console.log("View Employee");
-
+            viewEmployees();
             break;
         case "View Employees By Manager":
             console.log("View Employees By Manager");
@@ -165,4 +175,28 @@ let addEmployee = () => {
             }
         });
     })
+}
+
+// Views the departments
+let viewDpts = () => {
+    connection.query('SELECT * FROM department', (err,res) => {
+        if(err) throw err;
+        console.table(res);
+    });
+}
+
+// Views the roles
+let viewRoles = () => {
+    connection.query('SELECT * FROM role', (err,res) => {
+        if(err) throw err;
+        console.table(res);
+    });
+}
+
+// Views the employees
+let viewEmployees = () => {
+    connection.query('SELECT * FROM employee', (err,res) => {
+        if(err) throw err;
+        console.table(res);
+    });
 }
