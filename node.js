@@ -42,7 +42,7 @@ inquirer
             break;
         case "Add Role":
             console.log("Add Role");
-
+            addRole();
             break;
         case "Add Employee":
             console.log("Add Employee");
@@ -89,18 +89,47 @@ inquirer
     }
 })
 
+// Adds a department to the department table
 let addDepartment = () => {
     inquirer
     .prompt({
         name: "dpt",
         message: "What is the name of the new department?",
     }).then((res) => {
-        connection.query("Insert into department (name) VALUES ('" + res.dpt +"')", (err,result) => {
+        connection.query("Insert into department (name) VALUES ('" + res.dpt + "')", (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
             }
             else{
-                console.log("new column added");
+                console.log("new department data added");
+            }
+        });
+    })
+}
+
+// Adds a role to the role table
+let addRole = () => {
+    inquirer
+    .prompt([
+        {
+            name: "title",
+            message: "What is the title of the new role?"
+        },
+        {
+            name: "salary",
+            message: "What is the salary of the new role?"
+        },
+        {
+            name: "dptid",
+            message: "What is the department id of the new role?"
+        }]
+    ).then((res) => {
+        connection.query("Insert into role (title, salary, department_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptid +")", (err,result) => {
+            if(err){
+                console.log("ERROR:"+err.message);
+            }
+            else{
+                console.log("new role data added");
             }
         });
     })
