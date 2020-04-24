@@ -31,12 +31,13 @@ inquirer
     name: "option",
     message: "What would you like to do?",
     choices: [
+        "View Company",
         "Add Department",
         "Add Role",
         "Add Employee",
-        "View Department",
-        "View Role",
-        "View Employee",
+        "View Departments",
+        "View Roles",
+        "View Employees",
         "View Employees By Manager",
         "Update Employee Role",
         "Delete Department",
@@ -46,6 +47,10 @@ inquirer
     ]
 }).then((res) => {
     switch (res.option) {
+        case "View Company":
+            console.log("View Company");
+            viewCompany();
+            break;
         case "Add Department":
             console.log("Add Department, success");
             addDepartment();
@@ -58,15 +63,15 @@ inquirer
             console.log("Add Employee");
             addEmployee();
             break;
-        case "View Department":
+        case "View Departments":
             console.log("View Department");
             viewDpts();
             break;
-        case "View Role":
+        case "View Roles":
             console.log("View Role");
             viewRoles();
             break;
-        case "View Employee":
+        case "View Employees":
             console.log("View Employee");
             viewEmployees();
             break;
@@ -102,11 +107,17 @@ inquirer
 // Adds a department to the department table
 let addDepartment = () => {
     inquirer
-    .prompt({
-        name: "dpt",
-        message: "What is the name of the new department?",
-    }).then((res) => {
-        connection.query("Insert into department (name) VALUES ('" + res.dpt + "')", (err,result) => {
+        .prompt([{
+            name: "dpt",
+            message: "What is the name of this new department?",
+        },
+        {
+            name: "dptID",
+            message: "What is the id for this new department?",
+        }
+        ]).then((res) => {
+        let query = "Insert into department (name, dptid) VALUES ('" + res.dpt + "', " + res.dptID + ")";
+        connection.query(query, (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
             }
@@ -130,11 +141,18 @@ let addRole = () => {
             message: "What is the salary of the new role?"
         },
         {
-            name: "dptid",
+            name: "dptID",
             message: "What is the department id of the new role?"
+        },
+        {
+            name: "roleID",
+            message: "What is the role id of the new role?"
         }]
     ).then((res) => {
-        connection.query("Insert into role (title, salary, department_id) VALUES ('" + res.title + "', '" + res.salary + "', '" + res.dptid +"')", (err,result) => {
+        console.log(res);
+        let query = "Insert into role (title, salary, department_id, role_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptID + ", " + res.roleID + ")";
+        console.log(query);
+        connection.query(query, (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
             }
@@ -263,4 +281,13 @@ let updateRole = () => {
                 })
         }
     })
+}
+
+// Views all of the company
+let viewCompany = () => {
+    // Getting info from all of the 
+    connection.query('SELECT role.title FROM role INNER JOIN employee ON department_id=role_id;', (err,res) => {
+        if(err) throw err;
+        console.table(res);
+    });
 }
