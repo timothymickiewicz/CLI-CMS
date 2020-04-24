@@ -76,7 +76,7 @@ inquirer
             break;
         case "Update Employee Role":
             console.log("Update Employee Role");
-
+            updateRole();
             break;
         case "Delete Department":
             console.log("Delete Department");
@@ -171,7 +171,7 @@ let addEmployee = () => {
                 console.log("ERROR:"+err.message);
             }
             else{
-                console.log("new role data added");
+                console.log("new employee data added");
             }
         });
     })
@@ -199,4 +199,68 @@ let viewEmployees = () => {
         if(err) throw err;
         console.table(res);
     });
+}
+
+// Updates the employee's role
+let updateRole = () => {
+    let employeesFirstLast = [];
+    let employees = [];
+    let check = null;
+    // Getting all employees into a useable array
+    connection.query('SELECT * FROM employee', (err,res) => {
+        if(err) throw err;
+        for (i=0; i<res.length; i++) {
+            employees.push(JSON.parse(JSON.stringify(res[i])));
+        }
+        // Getting all employees into an array of first and last names
+        for (i=0; i<employees.length; i++) {
+            employeesFirstLast.push(employees[i].first_name.concat(` ${employees[i].last_name}`));
+        }
+        return employeesFirstLast;
+    })
+    inquirer
+    .prompt([
+        {
+            name: "employee",
+            message: "Enter the employee that you wish to update.",
+        },
+        {
+            name: "newRole",
+            message: "Enter this employee's new role ID.",
+        }
+    ]).then((res) => {
+        for (i=0; i<employeesFirstLast.length; i++) {
+            // Comparing what the user entered to the employees in the database, else recursion to try again
+            if (res.employee === employeesFirstLast[i]) {
+                // Getting first and last names separated from the selected employee
+                let first = employeesFirstLast[i].split(' ')[0];
+                let second = employeesFirstLast[i].split(' ')[1];
+                connection.query(
+                    "UPDATE employee SET role_id = " + res.newRole + " WHERE (first_name = '" + first + "' AND last_name = '" + second+"')", 
+                    (err, res) => {
+                    if (err) throw err;
+                
+                    console.log(`Changed ${res.changedRows} row(s)`);
+                    }
+                );
+            }
+            else {
+                check = false;
+            }
+        }
+        if (check === false) {
+            inquirer
+                .prompt([
+                    {
+                        type: "confirm",
+                        name: "retry",
+                        message: "We did not find any employees under that name. Please ensure to spell their name correctly. Do you wish to try again?",
+                    }
+                ]).then((res) => {
+                    if (res.retry === true) {
+                        updateRole();
+                    } 
+                })
+        }
+    })
 }
