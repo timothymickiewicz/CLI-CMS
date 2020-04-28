@@ -7,7 +7,6 @@ USE company_Db;
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(30) NOT NULL,
-  dptid INT NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -16,7 +15,12 @@ CREATE TABLE role (
   title VARCHAR(30) NOT NULL,
   salary DECIMAL(10,2) NOT NULL,
   department_id INT NOT NULL,
-  role_id INT NOT NULL,
+
+  CONSTRAINT department_id
+  FOREIGN KEY (department_id)
+  REFERENCES department(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   PRIMARY KEY (id)
 );
 
@@ -26,5 +30,18 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NOT NULL,
   role_id INT NOT NULL,
   manager_id INT NULL,
+
+  CONSTRAINT role_id
+  FOREIGN KEY (role_id)
+  REFERENCES role(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+
+  CONSTRAINT manager_id
+  FOREIGN KEY (manager_id) 
+  REFERENCES employee(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+
   PRIMARY KEY (id)
 );

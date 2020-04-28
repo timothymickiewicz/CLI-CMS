@@ -1,44 +1,58 @@
-INSERT INTO department (name, dptid)
-VALUES ("Finance", 01);
-INSERT INTO department (name, dptid)
-VALUES ("Human Resources", 02);
-INSERT INTO department (name, dptid)
-VALUES ("Sales", 03);
-INSERT INTO department (name, dptid)
-VALUES ("Research", 04);
-INSERT INTO department (name, dptid)
-VALUES ("Development", 05);
-INSERT INTO department (name, dptid)
-VALUES ("IT", 06);
-INSERT INTO department (name, dptid)
-VALUES ("Dev Ops", 07);
+INSERT INTO department (name)
+VALUES ("Finance");
+INSERT INTO department (name)
+VALUES ("Human Resources");
+INSERT INTO department (name)
+VALUES ("Sales");
+INSERT INTO department (name)
+VALUES ("Research");
+INSERT INTO department (name)
+VALUES ("Development");
+INSERT INTO department (name)
+VALUES ("IT");
+INSERT INTO department (name)
+VALUES ("Dev Ops");
 
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Finance", 75000, 01, 10);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Human Resources", 60000, 02, 11);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Sales", 80000, 03, 12);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Research", 150000, 04, 13);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Development", 100000, 05, 14);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("IT", 75000, 06, 15);
-INSERT INTO role (title, salary, department_id, role_id)
-VALUES ("Dev Ops", 100000, 07, 16);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Finance", 75000, 01);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Human Resources", 60000, 02);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Sales", 80000, 03);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Research", 150000, 04);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Development", 100000, 05);
+INSERT INTO role (title, salary, department_id)
+VALUES ("IT", 75000, 06);
+INSERT INTO role (title, salary, department_id)
+VALUES ("Dev Ops", 100000, 07);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Timothy", "Mickiewicz", 01, 01);
+VALUES ("Manager", "Research", 04, null);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Anthony", "WertHeimer", 02, null);
+VALUES ("Timothy", "Mickiewicz", 04, 01);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Whatcha", "MaCallit", 03, null);
+VALUES ("Manager", "Finance", 01, null);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Whatsie", "Hoosit", 04, 02);
+VALUES ("Anthony", "WertHeimer", 01, 03);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Mr", "Incredible", 05, null);
+VALUES ("Manager", "HR", 02, null);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Brett", "Smitt", 06, null);
+VALUES ("Whatcha", "MaCallit", 02, 05);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Smith", "Worcestshire", 07, null);
+VALUES ("Manager", "Sales", 03, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Whatsie", "Hoosit", 03, 07);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Manager", "IT", 06, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Mr", "Incredible", 06, 09);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Manager", "Development", 05, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Brett", "Smitt", 05, 11);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Manager", "DevOps", 07, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Smith", "Worcestshire", 07, 13);

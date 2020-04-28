@@ -5,6 +5,7 @@ const cFonts = require("cfonts");
 
 // Establishes connection to mysql
 const connection = mysql.createConnection({
+    multipleStatements: true,
     host: "localhost",
   
     port: 3306,
@@ -77,7 +78,7 @@ inquirer
             break;
         case "View Employees By Manager":
             console.log("View Employees By Manager");
-
+            viewByMngr();
             break;
         case "Update Employee Role":
             console.log("Update Employee Role");
@@ -110,13 +111,9 @@ let addDepartment = () => {
         .prompt([{
             name: "dpt",
             message: "What is the name of this new department?",
-        },
-        {
-            name: "dptID",
-            message: "What is the id for this new department?",
         }
         ]).then((res) => {
-        let query = "Insert into department (name, dptid) VALUES ('" + res.dpt + "', " + res.dptID + ")";
+        let query = "Insert into department (name) VALUES ('" + res.dpt + "')";
         connection.query(query, (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
@@ -144,13 +141,9 @@ let addRole = () => {
             name: "dptID",
             message: "What is the department id of the new role?"
         },
-        {
-            name: "roleID",
-            message: "What is the role id of the new role?"
-        }]
-    ).then((res) => {
+    ]).then((res) => {
         console.log(res);
-        let query = "Insert into role (title, salary, department_id, role_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptID + ", " + res.roleID + ")";
+        let query = "Insert into role (title, salary, department_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptID + ")";
         console.log(query);
         connection.query(query, (err,result) => {
             if(err){
@@ -261,12 +254,13 @@ let updateRole = () => {
                     console.log(`Changed ${res.changedRows} row(s)`);
                     }
                 );
-            }
-            else {
-                check = false;
+                check = true;
+                console.log(check);
+                break;
             }
         }
-        if (check === false) {
+        if (check != true) {
+            console.log(check);
             inquirer
                 .prompt([
                     {
@@ -285,9 +279,24 @@ let updateRole = () => {
 
 // Views all of the company
 let viewCompany = () => {
-    // Getting info from all of the 
-    connection.query('SELECT role.title FROM role INNER JOIN employee ON department_id=role_id;', (err,res) => {
+    // Getting info from everything and formatting it
+    connection.query('SELECT role.title FROM role INNER JOIN employee ON role.id=employee.role_id', (err,res) => {
         if(err) throw err;
+        console.log(res);
         console.table(res);
     });
 }
+
+let viewByMngr = () => {
+    connection.query('', [1,2], (err,res) => {
+        if (err) {
+            console.log(err);
+        }
+        console.log(res);
+        console.log(res[0]);
+        console.log(res[1]);
+    })
+}
+
+// How to do multiple queries
+// 'SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employees FROM employee WHERE manager_id IS NOT NULL ORDER BY manager_id; SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Managers FROM employee WHERE manager_id IS NULL;'
