@@ -93,7 +93,7 @@ let menu = () => {
                 break;
             case "Delete Department":
                 console.log("Delete Department");
-
+                deleteDpt();
                 break;
             case "Delete Role":
                 console.log("Delete Role");
@@ -252,7 +252,7 @@ let updateRole = () => {
                     "UPDATE employee SET role_id = " + res.newRole + " WHERE (first_name = '" + first + "' AND last_name = '" + second +"')", 
                     (err, res) => {
                     if (err) throw err;
-                    console.log(`Changed ${res.changedRows} row(s)`);
+                        console.log(`Changed ${res.changedRows} row(s)`);
                     }
                 );
                 check = true;
@@ -290,6 +290,7 @@ let viewCompany = () => {
     });
 }
 
+// Views all managers and thier associated employees
 let viewByMngrs = () => {
     connection.query(`SELECT CONCAT(m.first_name, ', ', m.last_name) AS Manager, CONCAT(e.first_name, ', ', e.last_name) AS 'Employee' FROM employee e INNER JOIN employee m ON m.id = e.manager_id ORDER BY Manager`, (err,res) => {
         if (err) {
@@ -300,6 +301,7 @@ let viewByMngrs = () => {
     })
 }
 
+// Views employees of a single manager
 let viewByMngr = () => {
     inquirer
     .prompt([
@@ -317,6 +319,42 @@ let viewByMngr = () => {
         })
     })
 }
+
+// Deletes department and the associated roles/employees
+let deleteDpt = () => {
+    inquirer
+    .prompt([
+        {
+            name: "dpt",
+            message: "Enter the department's id that you want to delete.",
+        }
+    ]).then((res) => {
+        let dpt = res.dpt;
+        inquirer
+        .prompt([
+            {
+                type: "confirm",
+                name: "proceed",
+                message: "Warning, this will remove all employees and roles associated with this department. You may wish to re-assign these employees and/or roles before proceeding. Do you still wish to proceed?",
+            }
+        ]).then((res) => {
+            if (res.proceed === true) {
+                connection.query(`DELETE role, department FROM role INNER JOIN department ON department.id = role.department_id WHERE role.department_id = ${dpt}`, (err,res) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                        console.log(res);
+                        console.log(`Deleted ${res.changedRows} row(s)`);
+                        menu();
+                })
+            }
+            else if (res.proceed === false) {
+                menu();
+            }
+        })
+    })
+}
+
 
 // `SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employees FROM employee WHERE manager_id = ${res.employees}`
 

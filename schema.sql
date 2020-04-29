@@ -15,12 +15,13 @@ CREATE TABLE role (
   title VARCHAR(30) NOT NULL,
   salary DECIMAL(10,2) NOT NULL,
   department_id INT NOT NULL,
-
+  
   CONSTRAINT department_id
   FOREIGN KEY (department_id)
   REFERENCES department(id)
   ON DELETE CASCADE
   ON UPDATE CASCADE,
+  
   PRIMARY KEY (id)
 );
 
