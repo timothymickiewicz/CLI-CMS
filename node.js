@@ -2,17 +2,18 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const cTable = require("console.table");
 const cFonts = require("cfonts");
+const dotenv = require("dotenv").config();
 
 // Establishes connection to mysql
 const connection = mysql.createConnection({
     multipleStatements: true,
-    host: "localhost",
+    host: process.env.host,
   
     port: 3306,
   
-    user: "root",
+    user: process.env.user,
   
-    password: "password",
+    password: process.env.pw,
     database: "company_db"
 });
 
@@ -22,88 +23,96 @@ connection.connect((err) => {
         return;
     }
     console.log('Connection established');
+    menu();
  });
   
 // connection.end((err) => {});
+let menu = () => {
+    inquirer
+    .prompt({
+        type: "list",
+        name: "option",
+        message: "What would you like to do?",
+        choices: [
+            "View Company",
+            "Add Department",
+            "Add Role",
+            "Add Employee",
+            "View Departments",
+            "View Roles",
+            "View Employees",
+            "View All Employees By Managers",
+            "View A Manager's Employees",
+            "Update Employee Role",
+            "Delete Department",
+            "Delete Role",
+            "Delete Employee",
+            "View Budget By Department"
+        ]
+    }).then((res) => {
+        switch (res.option) {
+            case "View Company":
+                console.log("View Company");
+                viewCompany();
+                break;
+            case "Add Department":
+                console.log("Add Department");
+                addDepartment();
+                break;
+            case "Add Role":
+                console.log("Add Role");
+                addRole();
+                break;
+            case "Add Employee":
+                console.log("Add Employee");
+                addEmployee();
+                break;
+            case "View Departments":
+                console.log("View Department");
+                viewDpts();
+                break;
+            case "View Roles":
+                console.log("View Role");
+                viewRoles();
+                break;
+            case "View Employees":
+                console.log("View Employee");
+                viewEmployees();
+                break;
+            case "View All Employees By Managers":
+                console.log("View All Employees By Manager");
+                viewByMngrs();
+                break;
+            case "View A Manager's Employees":
+                console.log("View All Employees By Manager");
+                viewByMngr();
+                break;
+            case "Update Employee Role":
+                console.log("Update Employee Role");
+                updateRole();
+                break;
+            case "Delete Department":
+                console.log("Delete Department");
 
-inquirer
-.prompt({
-    type: "list",
-    name: "option",
-    message: "What would you like to do?",
-    choices: [
-        "View Company",
-        "Add Department",
-        "Add Role",
-        "Add Employee",
-        "View Departments",
-        "View Roles",
-        "View Employees",
-        "View Employees By Manager",
-        "Update Employee Role",
-        "Delete Department",
-        "Delete Role",
-        "Delete Employee",
-        "View Budget By Department"
-    ]
-}).then((res) => {
-    switch (res.option) {
-        case "View Company":
-            console.log("View Company");
-            viewCompany();
-            break;
-        case "Add Department":
-            console.log("Add Department, success");
-            addDepartment();
-            break;
-        case "Add Role":
-            console.log("Add Role");
-            addRole();
-            break;
-        case "Add Employee":
-            console.log("Add Employee");
-            addEmployee();
-            break;
-        case "View Departments":
-            console.log("View Department");
-            viewDpts();
-            break;
-        case "View Roles":
-            console.log("View Role");
-            viewRoles();
-            break;
-        case "View Employees":
-            console.log("View Employee");
-            viewEmployees();
-            break;
-        case "View Employees By Manager":
-            console.log("View Employees By Manager");
-            viewByMngr();
-            break;
-        case "Update Employee Role":
-            console.log("Update Employee Role");
-            updateRole();
-            break;
-        case "Delete Department":
-            console.log("Delete Department");
+                break;
+            case "Delete Role":
+                console.log("Delete Role");
 
-            break;
-        case "Delete Role":
-            console.log("Delete Role");
+                break;
+            case "Delete Employee":
+                console.log("Delete Employee");
 
-            break;
-        case "Delete Employee":
-            console.log("Delete Employee");
+                break;
+            case "View Budget By Department":
+                console.log("View Budget By Department");
 
-            break;
-        case "View Budget By Department":
-            console.log("View Budget By Department");
-
-            break;
-        default: 
-            console.log("You Must Choose an Option!");
-    }
-})
+                break;
+            default: 
+                console.log("You Must Choose an Option!");
+                menu();
+        }
+    })
+}
 
 // Adds a department to the department table
 let addDepartment = () => {
@@ -113,14 +122,12 @@ let addDepartment = () => {
             message: "What is the name of this new department?",
         }
         ]).then((res) => {
-        let query = "Insert into department (name) VALUES ('" + res.dpt + "')";
-        connection.query(query, (err,result) => {
+        connection.query("Insert into department (name) VALUES ('" + res.dpt + "')", (err,result) => {
             if(err){
                 console.log("ERROR:"+err.message);
             }
-            else{
-                console.log("new department data added");
-            }
+            console.log("new department data added");
+            menu();
         });
     })
 }
@@ -142,16 +149,10 @@ let addRole = () => {
             message: "What is the department id of the new role?"
         },
     ]).then((res) => {
-        console.log(res);
-        let query = "Insert into role (title, salary, department_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptID + ")";
-        console.log(query);
-        connection.query(query, (err,result) => {
-            if(err){
-                console.log("ERROR:"+err.message);
-            }
-            else{
-                console.log("new role data added");
-            }
+        connection.query("Insert into role (title, salary, department_id) VALUES ('" + res.title + "', " + res.salary + ", " + res.dptID + ")", (err,result) => {
+            if(err) throw err;
+            console.log("New role data added");
+            menu();
         });
     })
 }
@@ -174,16 +175,13 @@ let addEmployee = () => {
         },
         {
             name: "manID",
-            message: "What is the manager's id number of this new employee?"
+            message: "What is the manager's id number for this new employee?"
         }]
     ).then((res) => {
         connection.query("Insert into employee (first_name, last_name, role_id, manager_id) VALUES ('" + res.firstName + "', '" + res.lastName + "', '" + res.roleID + "', '" + res.manID + "')", (err,result) => {
-            if(err){
-                console.log("ERROR:"+err.message);
-            }
-            else{
-                console.log("new employee data added");
-            }
+            if(err) throw err;
+            console.log("New employee data added");
+            menu();
         });
     })
 }
@@ -193,6 +191,7 @@ let viewDpts = () => {
     connection.query('SELECT * FROM department', (err,res) => {
         if(err) throw err;
         console.table(res);
+        menu();
     });
 }
 
@@ -201,6 +200,7 @@ let viewRoles = () => {
     connection.query('SELECT * FROM role', (err,res) => {
         if(err) throw err;
         console.table(res);
+        menu();
     });
 }
 
@@ -209,6 +209,7 @@ let viewEmployees = () => {
     connection.query('SELECT * FROM employee', (err,res) => {
         if(err) throw err;
         console.table(res);
+        menu();
     });
 }
 
@@ -221,6 +222,7 @@ let updateRole = () => {
     connection.query('SELECT * FROM employee', (err,res) => {
         if(err) throw err;
         for (i=0; i<res.length; i++) {
+            // Removing default mySQL encompassing object
             employees.push(JSON.parse(JSON.stringify(res[i])));
         }
         // Getting all employees into an array of first and last names
@@ -241,26 +243,24 @@ let updateRole = () => {
         }
     ]).then((res) => {
         for (i=0; i<employeesFirstLast.length; i++) {
-            // Comparing what the user entered to the employees in the database, else recursion to try again
+            // Comparing what the user entered to the employees pulled from the database, else recursion to let the user choose to try again
             if (res.employee === employeesFirstLast[i]) {
                 // Getting first and last names separated from the selected employee
                 let first = employeesFirstLast[i].split(' ')[0];
                 let second = employeesFirstLast[i].split(' ')[1];
                 connection.query(
-                    "UPDATE employee SET role_id = " + res.newRole + " WHERE (first_name = '" + first + "' AND last_name = '" + second+"')", 
+                    "UPDATE employee SET role_id = " + res.newRole + " WHERE (first_name = '" + first + "' AND last_name = '" + second +"')", 
                     (err, res) => {
                     if (err) throw err;
-                
                     console.log(`Changed ${res.changedRows} row(s)`);
                     }
                 );
                 check = true;
-                console.log(check);
-                break;
+                menu();
             }
         }
+        // Informs the user that there is no existing employee with that name, and asks them if they want to try again.
         if (check != true) {
-            console.log(check);
             inquirer
                 .prompt([
                     {
@@ -272,6 +272,9 @@ let updateRole = () => {
                     if (res.retry === true) {
                         updateRole();
                     } 
+                    else {
+                        menu();
+                    }
                 })
         }
     })
@@ -287,16 +290,39 @@ let viewCompany = () => {
     });
 }
 
-let viewByMngr = () => {
-    connection.query('', [1,2], (err,res) => {
+let viewByMngrs = () => {
+    connection.query(`SELECT CONCAT(m.first_name, ', ', m.last_name) AS Manager, CONCAT(e.first_name, ', ', e.last_name) AS 'Employee' FROM employee e INNER JOIN employee m ON m.id = e.manager_id ORDER BY Manager`, (err,res) => {
         if (err) {
             console.log(err);
         }
-        console.log(res);
-        console.log(res[0]);
-        console.log(res[1]);
+        console.table(res);
+        menu();
     })
 }
 
+let viewByMngr = () => {
+    inquirer
+    .prompt([
+        {
+            name: "employees",
+            message: "Enter the manager's id number.",
+        }
+    ]).then((res) => {
+        connection.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employees FROM employee WHERE manager_id = ${res.employees}`, (err,res) => {
+            if (err) {
+                console.log(err);
+            }
+                console.table(res);
+                menu();
+        })
+    })
+}
+
+// `SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employees FROM employee WHERE manager_id = ${res.employees}`
+
 // How to do multiple queries
 // 'SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employees FROM employee WHERE manager_id IS NOT NULL ORDER BY manager_id; SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Managers FROM employee WHERE manager_id IS NULL;'
+
+// Using foreign keys
+// INNER JOIN orderdetails 
+//     USING (orderNumber)
