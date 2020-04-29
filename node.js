@@ -43,6 +43,7 @@ let menu = () => {
             "View All Employees By Managers",
             "View A Manager's Employees",
             "Update Employee Role",
+            "Update Employee's Manager",
             "Delete Department",
             "Delete Role",
             "Delete Employee",
@@ -85,6 +86,10 @@ let menu = () => {
             case "Update Employee Role":
                 console.log("Update Employee Role");
                 updateRole();
+                break;
+            case "Update Employee's Manager":
+                console.log("Update Employee's Manager");
+                updateManager();
                 break;
             case "Delete Department":
                 console.log("Delete Department");
@@ -277,6 +282,73 @@ let updateRole = () => {
                 ]).then((res) => {
                     if (res.retry === true) {
                         updateRole();
+                    } 
+                    else {
+                        menu();
+                    }
+                })
+        }
+    })
+}
+
+// Updates the employee's manager id number
+let updateManager = () => {
+    let employeesFirstLast = [];
+    let employees = [];
+    let check = null;
+    // Getting all employees into a useable array
+    connection.query('SELECT * FROM employee', (err,res) => {
+        if(err) throw err;
+        for (i=0; i<res.length; i++) {
+            // Removing default mySQL encompassing object
+            employees.push(JSON.parse(JSON.stringify(res[i])));
+        }
+        // Getting all employees into an array of first and last names
+        for (i=0; i<employees.length; i++) {
+            employeesFirstLast.push(employees[i].first_name.concat(` ${employees[i].last_name}`));
+        }
+        return employeesFirstLast;
+    })
+    inquirer
+    .prompt([
+        {
+            name: "employee",
+            message: "Enter the employee that you wish to update.",
+        },
+        {
+            name: "newManID",
+            message: "Enter this employee's new manager ID.",
+        }
+    ]).then((res) => {
+        for (i=0; i<employeesFirstLast.length; i++) {
+            // Comparing what the user entered to the employees pulled from the database, else recursion to let the user choose to try again
+            if (res.employee === employeesFirstLast[i]) {
+                // Getting first and last names separated from the selected employee
+                let first = employeesFirstLast[i].split(' ')[0];
+                let second = employeesFirstLast[i].split(' ')[1];
+                connection.query(
+                    "UPDATE employee SET manager_id = " + res.newManID + " WHERE (first_name = '" + first + "' AND last_name = '" + second +"')", 
+                    (err, res) => {
+                    if (err) throw err;
+                        console.log(`Changed ${res.changedRows} row(s)`);
+                    }
+                );
+                check = true;
+                menu();
+            }
+        }
+        // Informs the user that there is no existing employee with that name, and asks them if they want to try again.
+        if (check != true) {
+            inquirer
+                .prompt([
+                    {
+                        type: "confirm",
+                        name: "retry",
+                        message: "We did not find any employees under that name. Please ensure to spell their name correctly. Do you wish to try again?",
+                    }
+                ]).then((res) => {
+                    if (res.retry === true) {
+                        updateManager();
                     } 
                     else {
                         menu();
