@@ -5,7 +5,7 @@ const cFonts = require("cfonts");
 const dotenv = require("dotenv").config();
 
 // Establishes connection to mysql
-const connection = mysql.createConnection({
+let connection = mysql.createConnection({
     multipleStatements: true,
     host: process.env.host,
   
@@ -24,7 +24,7 @@ connection.connect((err) => {
     }
     console.log('Connection established');
     menu();
- });
+});
   
 // connection.end((err) => {});
 let menu = () => {
@@ -199,6 +199,7 @@ let addEmployee = () => {
 
 // Views the departments
 let viewDpts = () => {
+    connect();
     connection.query('SELECT * FROM department', (err,res) => {
         if(err) throw err;
         console.table(res);
