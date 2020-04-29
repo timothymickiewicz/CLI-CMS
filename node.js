@@ -97,7 +97,7 @@ let menu = () => {
                 break;
             case "Delete Role":
                 console.log("Delete Role");
-
+                deleteRole();
                 break;
             case "Delete Employee":
                 console.log("Delete Employee");
@@ -175,14 +175,25 @@ let addEmployee = () => {
         },
         {
             name: "manID",
-            message: "What is the manager's id number for this new employee?"
+            message: "What is the manager's id number for this new employee? Leave empty and hit 'enter' key if this employee is a manager."
         }]
     ).then((res) => {
-        connection.query("Insert into employee (first_name, last_name, role_id, manager_id) VALUES ('" + res.firstName + "', '" + res.lastName + "', '" + res.roleID + "', '" + res.manID + "')", (err,result) => {
-            if(err) throw err;
-            console.log("New employee data added");
-            menu();
-        });
+        // Leaves manager id field to the default of 'null' if employee is a manager
+        if (res.manID === "") {
+            connection.query("Insert into employee (first_name, last_name, role_id) VALUES ('" + res.firstName + "', '" + res.lastName + "', '" + res.roleID + "')", (err,result) => {
+                if(err) throw err;
+                console.log("New employee data added");
+                menu();
+            });
+        }
+        // Creates an employee with their associated manager's id number
+        else {
+            connection.query("Insert into employee (first_name, last_name, role_id, manager_id) VALUES ('" + res.firstName + "', '" + res.lastName + "', '" + res.roleID + "', '" + res.manID + "')", (err,result) => {
+                if(err) throw err;
+                console.log("New employee data added");
+                menu();
+            });
+        }
     })
 }
 
@@ -344,7 +355,42 @@ let deleteDpt = () => {
                         console.log(err);
                     }
                         console.log(res);
-                        console.log(`Deleted ${res.changedRows} row(s)`);
+                        console.log(`Deleted row(s)`);
+                        menu();
+                })
+            }
+            else if (res.proceed === false) {
+                menu();
+            }
+        })
+    })
+}
+
+// Deletes a role
+let deleteRole = () => {
+    inquirer
+    .prompt([
+        {
+            name: "role",
+            message: "Enter the role's id that you want to delete.",
+        }
+    ]).then((res) => {
+        let role = res.role;
+        inquirer
+        .prompt([
+            {
+                type: "confirm",
+                name: "proceed",
+                message: "Warning, this will remove all employees associated with this role. You may wish to re-assign these employees before proceeding. Do you still wish to proceed?",
+            }
+        ]).then((res) => {
+            if (res.proceed === true) {
+                connection.query(`DELETE role, employee FROM role INNER JOIN employee ON employee.role_id = role.id WHERE role.id = ${role}`, (err,res) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                        console.log(res);
+                        console.log(`Deleted row(s)`);
                         menu();
                 })
             }
