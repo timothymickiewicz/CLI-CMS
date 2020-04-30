@@ -1,20 +1,17 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const cTable = require("console.table");
-const cFonts = require("cfonts");
+const CFonts = require("cfonts");
 const dotenv = require("dotenv").config();
 
 // Establishes connection to mysql
 let connection = mysql.createConnection({
-    multipleStatements: true,
+    multipleStatements: process.env.boolean,
     host: process.env.host,
-  
-    port: 3306,
-  
+    port: process.env.port,
     user: process.env.user,
-  
     password: process.env.pw,
-    database: "company_db"
+    database: process.env.db
 });
 
 connection.connect((err) => {
@@ -25,7 +22,22 @@ connection.connect((err) => {
     console.log('Connection established');
     menu();
 });
-  
+
+CFonts.say("CLI-CMS", {
+    font: "block",
+    align: "left",
+    colors: ["blue"],
+    background: "transparent",
+    letterSpacing: 1,
+    lineHeight: 5,
+    space: true,
+    maxLength: "0",
+    gradient: true,
+    independentGradient: false,
+    transitionGradient: true,
+    env: "node"
+});
+
 // connection.end((err) => {});
 let menu = () => {
     inquirer
@@ -52,59 +64,45 @@ let menu = () => {
     }).then((res) => {
         switch (res.option) {
             case "Add Department":
-                console.log("Add Department");
                 addDepartment();
                 break;
             case "Add Role":
-                console.log("Add Role");
                 addRole();
                 break;
             case "Add Employee":
-                console.log("Add Employee");
                 addEmployee();
                 break;
             case "View Departments":
-                console.log("View Department");
                 viewDpts();
                 break;
             case "View Roles":
-                console.log("View Role");
                 viewRoles();
                 break;
             case "View Employees":
-                console.log("View Employee");
                 viewEmployees();
                 break;
             case "View All Employees By Managers":
-                console.log("View All Employees By Manager");
                 viewByMngrs();
                 break;
             case "View A Manager's Employees":
-                console.log("View All Employees By Manager");
                 viewByMngr();
                 break;
             case "Update Employee Role":
-                console.log("Update Employee Role");
                 updateRole();
                 break;
             case "Update Employee's Manager":
-                console.log("Update Employee's Manager");
                 updateManager();
                 break;
             case "Delete Department":
-                console.log("Delete Department");
                 deleteDpt();
                 break;
             case "Delete Role":
-                console.log("Delete Role");
                 deleteRole();
                 break;
             case "Delete Employee":
-                console.log("Delete Employee");
                 deleteEmployee();
                 break;
             case "View Budget By Department":
-                console.log("View Budget By Department");
                 viewBudget();
                 break;
             default: 
@@ -199,7 +197,6 @@ let addEmployee = () => {
 
 // Views the departments
 let viewDpts = () => {
-    connect();
     connection.query('SELECT * FROM department', (err,res) => {
         if(err) throw err;
         console.table(res);
