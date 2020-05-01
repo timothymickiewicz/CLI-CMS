@@ -1,7 +1,7 @@
 # CLI-CMS
 
 ## Demonstration
-![Gif](assets/media/CLI-CMS.gif)
+![Gif](/media/CLI-CMS.gif)
 
  
 ## Table of Contents
