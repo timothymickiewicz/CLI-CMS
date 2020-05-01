@@ -38,7 +38,6 @@ CFonts.say("CLI-CMS", {
     env: "node"
 });
 
-// connection.end((err) => {});
 let menu = () => {
     inquirer
     .prompt({
